@@ -3,7 +3,7 @@
 This project is a small Retrieval-Augmented Generation (RAG) application built
 with LangChain. It loads the Markdown files in `data/books`, stores their
 meaning as searchable vectors in Chroma, and uses the most relevant passages
-to answer questions with an OpenAI chat model.
+to answer questions with a Google Gemini chat model.
 
 ## What is RAG?
 
@@ -27,10 +27,10 @@ LangChain connects the individual RAG components:
 - `DirectoryLoader` loads Markdown documents from the books directory.
 - `RecursiveCharacterTextSplitter` creates chunks of 300 characters with 100
     characters of overlap. Overlap helps preserve meaning across chunk boundaries.
-- `OpenAIEmbeddings` converts documents and questions into vectors.
+- `GoogleGenerativeAIEmbeddings` converts documents and questions into vectors.
 - `Chroma` stores the vectors and performs similarity search.
 - `ChatPromptTemplate` builds the prompt containing the retrieved context.
-- `ChatOpenAI` generates the final answer from that prompt.
+- `ChatGoogleGenerativeAI` generates the final answer from that prompt.
 
 ## Project files
 
@@ -54,11 +54,10 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 pip install "unstructured[md]"
 ```
-
-Create a `.env` file in the project root with your OpenAI API key:
+Create a `.env` file in the project root with your Google Gemini API key:
 
 ```text
-OPENAI_API_KEY=your_api_key_here
+GOOGLE_API_KEY=your_google_api_key_here
 ```
 
 Do not commit `.env` or share the API key. These files are excluded by
@@ -89,9 +88,8 @@ python query_data.py "How does Alice meet the Mad Hatter?"
 The query script retrieves three relevant chunks. If the best similarity score
 is below `0.7`, it declines to answer because the database did not find enough
 relevant context. Otherwise, it prints the prompt, answer, and source paths.
-
-Both database creation and querying use the OpenAI API, so the API key must be
-valid and the account must have available credits.
+Both database creation and querying use the Google Generative AI API, so the
+`GOOGLE_API_KEY` must be valid and enabled for the Gemini API.
 
 ## Explore embeddings
 
@@ -109,21 +107,18 @@ when they do not contain exactly the same words.
 ```text
 Markdown files
             |
-            v
-DirectoryLoader -> text chunks -> OpenAI embeddings -> Chroma database
+DirectoryLoader -> text chunks -> Gemini embeddings -> Chroma database
                                                                                                                     ^
                                                                                                                     |
 User question -> question embedding -> similarity search
                                                                                                                     |
                                                      retrieved context + question
                                                                                                                     |
-                                                                                                                    v
-                                                                                             OpenAI chat model -> answer
+                                                                                             Gemini chat model -> answer
 ```
 
 ## Limitations
-
-- The application currently uses OpenAI for both embeddings and text generation.
+- The application currently uses Gemini for both embeddings and text generation.
 - The Chroma database is local and must be rebuilt when source documents change.
 - The answer quality depends on chunk size, similarity threshold, retrieved
-    documents, and the available OpenAI model quota.
+    documents, and the available Gemini API quota.
