@@ -1,0 +1,12 @@
+.env
+.DS_Store
+
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Generated vector database
+chroma/
+chroma_*
